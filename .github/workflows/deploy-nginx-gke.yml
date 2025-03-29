@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
@@ -34,14 +34,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Download Terraform State
         uses: actions/download-artifact@v3
         with:
           name: terraform-state
           path: .
-          
+
       - name: Authenticate with GCP
         run: |
           echo '${{ secrets.GOOGLE_CREDENTIALS }}' > gcp-key.json
