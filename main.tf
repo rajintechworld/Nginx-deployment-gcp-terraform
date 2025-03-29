@@ -9,4 +9,5 @@ resource "google_container_cluster" "gke" {
   name     = "nginx-gke-cluster"
   location = "us-central1"
   enable_autopilot = true  # Free-tier eligible control plane
+  deletion_protection = false
 }
