@@ -33,7 +33,9 @@ jobs:
           gcloud auth activate-service-account --key-file=gcp-key.json
 
       - name: Configure kubectl
-        run: gcloud container clusters get-credentials nginx-gke-cluster --region us-central1
+        run: |
+          PROJECT_ID=$(jq -r '.project_id' gcp-key.json)  # Extract project ID
+          gcloud container clusters get-credentials nginx-gke-cluster --region us-central1 --project $PROJECT_ID
 
       - name: Apply Nginx Deployment
         run: |
