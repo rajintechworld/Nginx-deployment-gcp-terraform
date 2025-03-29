@@ -24,7 +24,7 @@ jobs:
   #         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
   deploy-k8s:
-    needs: terraform
+    # needs: terraform
     runs-on: ubuntu-latest
     steps:
       - name: Authenticate with GCP
