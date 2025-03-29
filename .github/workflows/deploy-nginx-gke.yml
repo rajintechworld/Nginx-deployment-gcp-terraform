@@ -11,25 +11,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ✅ Checkout Repository
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # ✅ Set up Terraform
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: "latest"
+          terraform_version: 1.6.0
 
-      # ✅ Terraform Init
+      # ✅ Initialize Terraform
       - name: Terraform Init
         run: terraform init
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
-      # ✅ Terraform Plan
+      # ✅ Preview the plan
       - name: Terraform Plan
         run: terraform plan
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
-      # ✅ Terraform Apply (Auto-approve)
+      # ✅ Apply only after successful plan
       - name: Terraform Apply
         run: terraform apply -auto-approve
         env:
