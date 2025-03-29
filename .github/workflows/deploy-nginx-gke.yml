@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
@@ -23,25 +23,10 @@ jobs:
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
-      - name: Save Terraform State as Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: terraform-state
-          path: terraform.tfstate
-
   deploy-k8s:
     needs: terraform
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Download Terraform State
-        uses: actions/download-artifact@v3
-        with:
-          name: terraform-state
-          path: .
-
       - name: Authenticate with GCP
         run: |
           echo '${{ secrets.GOOGLE_CREDENTIALS }}' > gcp-key.json
