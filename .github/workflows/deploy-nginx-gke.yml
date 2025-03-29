@@ -29,19 +29,23 @@ jobs:
     steps:
       - name: Authenticate with GCP
         run: |
-          echo '${{ secrets.GOOGLE_CREDENTIALS }}' > gcp-key.json
+          echo "${{ secrets.GOOGLE_CREDENTIALS }}" > gcp-key.json
           gcloud auth activate-service-account --key-file=gcp-key.json
+          PROJECT_ID=$(jq -r '.project_id' gcp-key.json)  # Extract project ID
+          gcloud config set project $PROJECT_ID  # Set project dynamically
 
       - name: Install GKE Auth Plugin
         run: |
-          mkdir -p $HOME/.config/gcloud
-          export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-          echo "export USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> $HOME/.bashrc
-          source $HOME/.bashrc
+          curl -LO "https://storage.googleapis.com/gke-gcloud-auth-plugin/linux-amd64/gke-gcloud-auth-plugin"
+          chmod +x gke-gcloud-auth-plugin
+          sudo mv gke-gcloud-auth-plugin /usr/local/bin/
+          echo "GKE Auth Plugin Installed Successfully"
 
       - name: Configure kubectl
         run: |
-          PROJECT_ID=$(jq -r '.project_id' gcp-key.json)  # Extract project ID
+          export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+          echo "export USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> $HOME/.bashrc
+          PROJECT_ID=$(jq -r '.project_id' gcp-key.json)
           gcloud container clusters get-credentials nginx-gke-cluster --region us-central1 --project $PROJECT_ID
 
       - name: Apply Nginx Deployment
@@ -67,7 +71,7 @@ jobs:
                   ports:
                   - containerPort: 80
           EOF
-
+          
           cat <<EOF > nginx-service.yaml
           apiVersion: v1
           kind: Service
