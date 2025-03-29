@@ -32,6 +32,12 @@ jobs:
           echo '${{ secrets.GOOGLE_CREDENTIALS }}' > gcp-key.json
           gcloud auth activate-service-account --key-file=gcp-key.json
 
+      - name: Install GKE Auth Plugin
+        run: |
+          gcloud components install gke-gcloud-auth-plugin
+          echo "export USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> $HOME/.bashrc
+          source $HOME/.bashrc
+
       - name: Configure kubectl
         run: |
           PROJECT_ID=$(jq -r '.project_id' gcp-key.json)  # Extract project ID
