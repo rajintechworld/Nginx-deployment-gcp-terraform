@@ -1,0 +1,76 @@
+name: Deploy Nginx to GKE
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+  deploy-k8s:
+    needs: terraform
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate with GCP
+        run: echo "${{ secrets.GOOGLE_CREDENTIALS }}" > gcp-key.json && gcloud auth activate-service-account --key-file=gcp-key.json
+
+      - name: Configure kubectl
+        run: gcloud container clusters get-credentials nginx-gke-cluster --region us-central1
+
+      - name: Apply Nginx Deployment
+        run: |
+          cat <<EOF > nginx-deployment.yaml
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: nginx-deployment
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: nginx
+            template:
+              metadata:
+                labels:
+                  app: nginx
+              spec:
+                containers:
+                - name: nginx
+                  image: nginx:latest
+                  ports:
+                  - containerPort: 80
+          EOF
+
+          cat <<EOF > nginx-service.yaml
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: nginx-service
+          spec:
+            selector:
+              app: nginx
+            ports:
+              - protocol: TCP
+                port: 80
+                targetPort: 80
+            type: NodePort
+          EOF
+
+          kubectl apply -f nginx-deployment.yaml
+          kubectl apply -f nginx-service.yaml
