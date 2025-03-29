@@ -1,2 +1,2 @@
-# Nginx-deployment-eks-terraform
-Deploying an Nginx container on AWS EKS using Terraform and GitHub Actions.  This setup will:  Use Terraform to provision an EKS cluster.  Use GitHub Actions to deploy an Nginx pod to EKS automatically.
+# Nginx-deployment-gcp-terraform
+Deploying an Nginx container on GCP GKE using Terraform and GitHub Actions.  This setup will:  Use Terraform to provision an GKE cluster.  Use GitHub Actions to deploy an Nginx pod to GKE automatically.
