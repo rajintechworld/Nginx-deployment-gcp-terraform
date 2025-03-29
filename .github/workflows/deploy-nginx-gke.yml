@@ -44,10 +44,15 @@ jobs:
       - name: Configure kubectl
         run: |
           export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-          echo "export USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> $HOME/.bashrc
+          echo "export USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> ~/.bashrc
+          source ~/.bashrc
           PROJECT_ID=$(jq -r '.project_id' gcp-key.json)
           gcloud container clusters get-credentials nginx-gke-cluster --region us-central1 --project $PROJECT_ID
 
+      - name: Verify Kubernetes Access
+        run: |
+          kubectl get nodes
+          
       - name: Apply Nginx Deployment
         run: |
           cat <<EOF > nginx-deployment.yaml
