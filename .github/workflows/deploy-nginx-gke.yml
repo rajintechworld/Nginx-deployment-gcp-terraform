@@ -28,7 +28,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Authenticate with GCP
-        run: echo "${{ secrets.GOOGLE_CREDENTIALS }}" > gcp-key.json && gcloud auth activate-service-account --key-file=gcp-key.json
+        run: |
+          echo '${{ secrets.GOOGLE_CREDENTIALS }}' > gcp-key.json
+          gcloud auth activate-service-account --key-file=gcp-key.json
 
       - name: Configure kubectl
         run: gcloud container clusters get-credentials nginx-gke-cluster --region us-central1
