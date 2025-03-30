@@ -4,4 +4,4 @@
 
 - This setup will:  
    -- Use Terraform to provision an GKE cluster.  
-   -- Use GitHub Actions to deploy an Nginx pod to GKE automatically.
+   -- Use GitHub Actions to deploy an Nginx pod to GKE automatically
